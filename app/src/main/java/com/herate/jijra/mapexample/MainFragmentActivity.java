@@ -19,10 +19,12 @@ public class MainFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Starting onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_activity);
-        mViewPager = new ViewPager(this);
-        mViewPager.setId(R.id.viewPager);
+
+        mViewPager = (ViewPager)findViewById(R.id.viewPager);
         mViewPager.setAdapter(new MapPagerAdapter(getSupportFragmentManager()));
     }
 
@@ -35,14 +37,14 @@ public class MainFragmentActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int pos){
             switch(pos){
-                case 0:
+                case 1:
                     Log.d(TAG, "Changing to MapFragment");
                     return BeerMapFragment.newInstance();
-                case 1:
+                case 0:
                     Log.d(TAG, "Changing to ButtonFragment");
                     return ButtonFragment.newInstance();
                 default:
-                    return BeerMapFragment.newInstance();
+                    return ButtonFragment.newInstance();
             }
         }
 
