@@ -16,6 +16,7 @@ public class MainFragmentActivity extends FragmentActivity {
     private static final String TAG = MainFragmentActivity.class.getSimpleName();
 
     private ViewPager mViewPager;
+    private MapPagerAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,32 @@ public class MainFragmentActivity extends FragmentActivity {
         setContentView(R.layout.fragment_activity);
 
         mViewPager = (ViewPager)findViewById(R.id.viewPager);
-        mViewPager.setAdapter(new MapPagerAdapter(getSupportFragmentManager()));
+        mAdapter = new MapPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mAdapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                FragmentManager fm = getSupportFragmentManager();
+                Fragment fr = mAdapter.getItem(position);
+                if(fr instanceof BeerMapFragment){
+                    ((BeerMapFragment) fr).populateMap();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
+
+
 
     private class MapPagerAdapter extends FragmentPagerAdapter{
 
@@ -37,12 +62,12 @@ public class MainFragmentActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int pos){
             switch(pos){
-                case 1:
-                    Log.d(TAG, "Changing to MapFragment");
-                    return BeerMapFragment.newInstance();
                 case 0:
                     Log.d(TAG, "Changing to ButtonFragment");
                     return ButtonFragment.newInstance();
+                case 1:
+                    Log.d(TAG, "Changing to MapFragment");
+                    return BeerMapFragment.newInstance();
                 default:
                     return ButtonFragment.newInstance();
             }
