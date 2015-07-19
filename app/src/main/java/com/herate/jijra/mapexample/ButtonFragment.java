@@ -40,6 +40,7 @@ public class ButtonFragment extends Fragment implements FragmentLifecycle {
                 Toast.makeText(getActivity(), "New marker added.", Toast.LENGTH_SHORT).show();
                 ClugEvent clugEvent = new ClugEvent();
                 ClugLab.get(getActivity()).addEvent(clugEvent);
+                Log.d(TAG, String.valueOf(ClugLab.get(getActivity()).getClugs().size()));
                 return false;
             }
         });

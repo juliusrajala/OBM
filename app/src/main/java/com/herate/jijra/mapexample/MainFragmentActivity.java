@@ -10,6 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.google.android.gms.games.internal.GamesContract;
+import com.google.android.gms.maps.MapView;
 
 
 public class MainFragmentActivity extends FragmentActivity {
@@ -37,10 +41,10 @@ public class MainFragmentActivity extends FragmentActivity {
 
             @Override
             public void onPageSelected(int position) {
-                FragmentManager fm = getSupportFragmentManager();
+                mAdapter.notifyDataSetChanged();
                 Fragment fr = mAdapter.getItem(position);
                 if(fr instanceof BeerMapFragment){
-                    ((BeerMapFragment) fr).populateMap();
+                        fr.isResumed();
                 }
             }
 

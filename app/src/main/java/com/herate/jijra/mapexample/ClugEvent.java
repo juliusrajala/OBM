@@ -25,6 +25,7 @@ public class ClugEvent implements Comparable<ClugEvent> {
     private double mLatitude;
     private double mLongitude;
 
+
     public ClugEvent(){
         mDate = new Date();
         mNickName = "Nick Name";
