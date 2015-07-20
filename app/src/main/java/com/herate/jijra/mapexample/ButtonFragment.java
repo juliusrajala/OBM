@@ -11,6 +11,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 /**
  * Created by jijra on 17.7.2015.
  *
@@ -20,11 +28,37 @@ public class ButtonFragment extends Fragment implements FragmentLifecycle {
     private static final String TAG = ButtonFragment.class.getSimpleName();
 
     private FloatingActionButton mButton;
+    private MapView mMapView;
+    private GoogleMap googleMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.fragment_button, parent, false);
+
+        mMapView = (MapView)v.findViewById(R.id.mapCard);
+        mMapView.onCreate(savedInstanceState);
+
+        try{
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e){
+            Log.e(TAG, "Error thrown", e);
+        }
+
+        googleMap = mMapView.getMap();
+
+        float latitude = 60.450692f;
+        float longitude =  22.278664f;
+
+        MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Turku");
+
+        googleMap.addMarker(marker);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude)).zoom(15).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
         mButton = (FloatingActionButton)v.findViewById(R.id.add_button);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +68,7 @@ public class ButtonFragment extends Fragment implements FragmentLifecycle {
             }
         });
 
+        
         mButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
