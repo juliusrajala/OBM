@@ -9,16 +9,53 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        card_view:cardCornerRadius="0dp"
+        card_view:cardElevation="12dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFA000"
+            >
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/ic_perm_identity_black_48dp"
+                />
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/user_name"/>
+
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_list_black_48dp"
+                />
+
+
+            </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_marginTop="-40dp"
         android:id="@+id/score_card"
         android:layout_width="match_parent"
         android:layout_height="380dp"
         card_view:cardElevation="8dp"
+        card_view:cardCornerRadius="0dp"
         android:clickable="true"
         >
-        <LinearLayout
+        <RelativeLayout
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:background="#F57C00"
+            android:background="#212121"
             >
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapCard"
@@ -29,8 +66,16 @@
                 map:liteMode="true"
                 />
 
+            <ImageView
+                android:src="@drawable/sipmaporange"
+                android:layout_width="150dp"
+                android:paddingBottom="30dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                 />
 
-        </LinearLayout>
+
+        </RelativeLayout>
 
 
 
@@ -42,7 +87,7 @@
         android:layout_height="140dp"
         android:src="@drawable/glugger_icon"
         android:id="@+id/add_button"
-        app:elevation="10dp"
+        app:elevation="12dp"
         android:layout_gravity="center"
         android:clickable="true"
         app:borderWidth="0dp"

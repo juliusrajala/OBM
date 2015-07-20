@@ -134,14 +134,6 @@ public class BeerMapFragment extends Fragment implements FragmentLifecycle {
         Log.i(TAG, "onResumeFragment()");
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        Log.d(TAG, "OnPause called");
-        mMapView.onPause();
-    }
-
-
     //TODO: Include map drawing inside here.
     @Override
     public void onResume(){
@@ -151,6 +143,14 @@ public class BeerMapFragment extends Fragment implements FragmentLifecycle {
         populateMap();
         if(mMapView != null)
             mMapView.onResume();
+    }
+
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.d(TAG, "OnPause called");
+        mMapView.onPause();
     }
 
     @Override
