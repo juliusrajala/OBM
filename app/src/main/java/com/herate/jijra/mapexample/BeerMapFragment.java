@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -94,22 +95,19 @@ public class BeerMapFragment extends Fragment implements FragmentLifecycle {
     public void populateMap(){
         mEvents = ClugLab.get(getActivity()).getClugs();
         Log.d(TAG, "Populating map with markers, there's: " + mEvents.size());
-
-        if(mInitialized){
-            for(ClugEvent e : mEvents){
-                MarkerOptions marker = new MarkerOptions()
-                        .position(e.getLatLng())
-                        .title(e.getNick())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
-                googleMap.addMarker(marker);
-                try{
-                    MapsInitializer.initialize(getActivity().getApplicationContext());
-                } catch (Exception a){
-                    Log.e(TAG, "Error thrown", a);
-                }
-
-            }
-        }
+        Collections.sort(mEvents);
+//        for(int i=0; i<20; i++){
+//            MarkerOptions marker = new MarkerOptions()
+//                    .position(mEvents.get(i).getLatLng())
+//                    .title(mEvents.get(i).getNick())
+//                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+//            googleMap.addMarker(marker);
+//            try{
+//                MapsInitializer.initialize(getActivity().getApplicationContext());
+//            } catch (Exception a){
+//                Log.e(TAG, "Error thrown", a);
+//            }
+//        }
 
         if(mMapView == null){
             Log.d(TAG, "mapView is null");

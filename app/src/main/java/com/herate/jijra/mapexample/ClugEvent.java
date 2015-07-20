@@ -67,8 +67,8 @@ public class ClugEvent implements Comparable<ClugEvent> {
     }
 
     @Override
-    public int compareTo(ClugEvent clugEvent){
-
-        return 0;
+    public int compareTo(ClugEvent o){
+        if(getDate() == null || o.getDate() == null) return 0;
+        return getDate().compareTo(o.getDate())*-1;
     }
 }
