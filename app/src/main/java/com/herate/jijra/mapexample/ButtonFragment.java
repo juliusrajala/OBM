@@ -2,7 +2,10 @@ package com.herate.jijra.mapexample;
 
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -10,8 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * Created by jijra on 17.7.2015.
@@ -42,10 +44,11 @@ public class ButtonFragment extends Fragment implements
     private MapView mMapView;
     private GoogleMap googleMap;
 
-    private ArrayList<ClugEvent> mEvents;
+    private ArrayList<SipEvent> mEvents;
     private String mNick;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private LocationManager mLocationManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -61,17 +64,11 @@ public class ButtonFragment extends Fragment implements
         }
 
         googleMap = mMapView.getMap();
-
-        float latitude = 60.450692f;
-        float longitude =  22.278664f;
-
+        googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude, longitude)).zoom(15).build();
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
+        mLastLocation = getLocation();
+        fixMap();
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -92,9 +89,8 @@ public class ButtonFragment extends Fragment implements
             @Override
             public boolean onLongClick(View v) {
                 Toast.makeText(getActivity(), "New marker added.", Toast.LENGTH_SHORT).show();
-                ClugEvent clugEvent = new ClugEvent();
-                ClugLab.get(getActivity()).addEvent(clugEvent);
-                Log.d(TAG, String.valueOf(ClugLab.get(getActivity()).getClugs().size()));
+                SipLab.get(getActivity()).addEvent(makeEvent());
+                Log.d(TAG, String.valueOf(SipLab.get(getActivity()).getSips().size()));
                 populateMap();
                 return false;
             }
@@ -103,8 +99,32 @@ public class ButtonFragment extends Fragment implements
         return v;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        buildGoogleApiClient();
+        mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    public void fixMap(){
+        if(mLastLocation != null){
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15.0f));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())).zoom(17).build();
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
+
+    public Location getLocation(){
+        Criteria criteria = new Criteria();
+        Location lastLocation;
+        lastLocation = mLocationManager.getLastKnownLocation(mLocationManager.getBestProvider(criteria, false));
+        return lastLocation;
+    }
+
     public void populateMap(){
-        mEvents = ClugLab.get(getActivity()).getClugs();
+        mEvents = SipLab.get(getActivity()).getSips();
         Log.d(TAG, "Populating map with markers, there's: " + mEvents.size());
 
         Collections.sort(mEvents);
@@ -121,7 +141,7 @@ public class ButtonFragment extends Fragment implements
             }
         }catch(IndexOutOfBoundsException e){
             Log.e(TAG,"Index out of bounds", e);
-            for(ClugEvent a : mEvents){
+            for(SipEvent a : mEvents){
                 MarkerOptions marker = new MarkerOptions()
                         .position(a.getLatLng())
                         .title(a.getNick())
@@ -143,7 +163,9 @@ public class ButtonFragment extends Fragment implements
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 mMapView.invalidate();
+                fixMap();
             }
         });
     }
@@ -156,11 +178,7 @@ public class ButtonFragment extends Fragment implements
                 .build();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
-    }
+
 
     @Override
     public void onConnected(Bundle connectionHint){
@@ -200,6 +218,7 @@ public class ButtonFragment extends Fragment implements
     public void onPause(){
         super.onPause();
         Log.d(TAG, "OnPause called");
+        SipLab.get(getActivity()).saveSipEvents();
         mMapView.onPause();
     }
 
@@ -229,10 +248,9 @@ public class ButtonFragment extends Fragment implements
             mMapView.onLowMemory();
     }
 
-    public ClugEvent makeEvent(){
-        ClugEvent clugEvent = new ClugEvent();
-        //TODO: Make getters get actual information here
-        return clugEvent;
+    public SipEvent makeEvent(){
+        SipEvent sipEvent = new SipEvent("Julius", new Date(), getLocation().getLatitude(), getLocation().getLongitude());
+        return sipEvent;
     }
 
     public static ButtonFragment newInstance(){

@@ -6,15 +6,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by jijra on 17.7.2015.
  *
- * ClugEvent class implementation. Self-explanatory, for the most part.
+ * SipEvent class implementation. Self-explanatory, for the most part.
  */
-public class ClugEvent implements Comparable<ClugEvent> {
+public class SipEvent implements Comparable<SipEvent> {
     private static final String JSON_NICKNAME = "nickname";
     private static final String JSON_DATE = "datetime";
     private static final String JSON_LATITUDE = "latitude";
@@ -26,20 +24,20 @@ public class ClugEvent implements Comparable<ClugEvent> {
     private double mLongitude;
 
 
-    public ClugEvent(){
+    public SipEvent(){
         mDate = new Date();
         mNickName = "Nick Name";
         mLatitude = 60.450692+(Math.random()/1000);
         mLongitude = 22.278664+(Math.random()/1000);
     }
 
-    public ClugEvent(String nickName, Date date, double latitude, double longitude){
+    public SipEvent(String nickName, Date date, double latitude, double longitude){
         mDate = date;
         mNickName = nickName;
         mLatitude = latitude;
         mLongitude = longitude;
     }
-    public ClugEvent(JSONObject json) throws JSONException{
+    public SipEvent(JSONObject json) throws JSONException{
         mNickName = json.getString(JSON_NICKNAME);
         mDate = new Date(json.getLong(JSON_DATE));
         mLatitude = Double.parseDouble(json.getString(JSON_LATITUDE));
@@ -67,7 +65,7 @@ public class ClugEvent implements Comparable<ClugEvent> {
     }
 
     @Override
-    public int compareTo(ClugEvent o){
+    public int compareTo(SipEvent o){
         if(getDate() == null || o.getDate() == null) return 0;
         return getDate().compareTo(o.getDate())*-1;
     }
