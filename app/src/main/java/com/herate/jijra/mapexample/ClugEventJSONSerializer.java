@@ -28,8 +28,8 @@ public class ClugEventJSONSerializer {
         mFileName = f;
     }
 
-    public ArrayList<ClugEvent> loadEvents() throws IOException, JSONException{
-        ArrayList<ClugEvent> events = new ArrayList<>();
+    public ArrayList<SipEvent> loadEvents() throws IOException, JSONException{
+        ArrayList<SipEvent> events = new ArrayList<>();
         BufferedReader reader = null;
         try{
             InputStream in = mContext.openFileInput(mFileName);
@@ -41,7 +41,7 @@ public class ClugEventJSONSerializer {
             }
             JSONArray array = (JSONArray) new JSONTokener(jsonString.toString()).nextValue();
             for(int i = 0; i<array.length();i++){
-                events.add(new ClugEvent(array.getJSONObject(i)));
+                events.add(new SipEvent(array.getJSONObject(i)));
             }
         }catch (FileNotFoundException e){
             //Error thrown when no file
@@ -53,9 +53,9 @@ public class ClugEventJSONSerializer {
         return events;
     }
 
-    public void saveEvents(ArrayList<ClugEvent> events) throws JSONException, IOException{
+    public void saveEvents(ArrayList<SipEvent> events) throws JSONException, IOException{
         JSONArray array = new JSONArray();
-        for(ClugEvent c : events)
+        for(SipEvent c : events)
             array.put(c.toJSON());
 
         //Write to disk

@@ -8,45 +8,45 @@ import java.util.ArrayList;
 /**
  * Created by jijra on 17.7.2015.
  */
-public class ClugLab {
-    private static final String TAG = ClugLab.class.getSimpleName();
+public class SipLab {
+    private static final String TAG = SipLab.class.getSimpleName();
     private static final String FILENAME = "clugs.json";
 
-    private ArrayList<ClugEvent> mClugEvents;
+    private ArrayList<SipEvent> mSipEvents;
     private ClugEventJSONSerializer mSerializer;
 
-    private static ClugLab clugLab;
+    private static SipLab sipLab;
     private Context mAppContext;
 
-    private ClugLab(Context appContext){
+    private SipLab(Context appContext){
         mAppContext = appContext;
         mSerializer = new ClugEventJSONSerializer(mAppContext, FILENAME);
 
         try{
-            mClugEvents = mSerializer.loadEvents();
+            mSipEvents = mSerializer.loadEvents();
         }catch (Exception e){
-            mClugEvents = new ArrayList<>();
+            mSipEvents = new ArrayList<>();
             Log.e(TAG, "Error loading scores ", e);
         }
 
     }
 
-    public static ClugLab get(Context c){
-        if(clugLab == null){
-            clugLab = new ClugLab(c.getApplicationContext());
+    public static SipLab get(Context c){
+        if(sipLab == null){
+            sipLab = new SipLab(c.getApplicationContext());
         }
-        return clugLab;
+        return sipLab;
     }
 
-    public void addEvent(ClugEvent clugEvent){
-        mClugEvents.add(clugEvent);
+    public void addEvent(SipEvent sipEvent){
+        mSipEvents.add(sipEvent);
     }
 
-    public ArrayList<ClugEvent> getClugs(){ return mClugEvents; }
+    public ArrayList<SipEvent> getSips(){ return mSipEvents; }
 
-    public boolean saveClugEvents(){
+    public boolean saveSipEvents(){
         try {
-            mSerializer.saveEvents(mClugEvents);
+            mSerializer.saveEvents(mSipEvents);
             Log.d(TAG, "Events saved to file");
             return true;
         }catch (Exception e){
