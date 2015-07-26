@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public class ButtonFragment extends Fragment implements
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationManager mLocationManager;
+    private Toolbar mToolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -56,6 +58,9 @@ public class ButtonFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_button, parent, false);
         mMapView = (MapView)v.findViewById(R.id.mapCard);
         mMapView.onCreate(savedInstanceState);
+
+
+
 
         try{
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -99,19 +104,25 @@ public class ButtonFragment extends Fragment implements
         return v;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         buildGoogleApiClient();
+
         mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
     }
 
     public void fixMap(){
+        mLastLocation = getLocation();
         if(mLastLocation != null){
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15.0f));
+                    new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 12.0f));
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())).zoom(17).build();
+                    .tilt(60.0f)
+                    .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                    .zoom(15)
+                    .build();
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
@@ -211,6 +222,7 @@ public class ButtonFragment extends Fragment implements
     @Override
     public void onResume(){
         super.onResume();
+        mMapView.onResume();
         populateMap();
     }
 

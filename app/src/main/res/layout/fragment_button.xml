@@ -8,47 +8,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        card_view:cardCornerRadius="0dp"
-        card_view:cardElevation="12dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFA000"
-            >
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="16dp"
-                android:src="@drawable/ic_face_white_48dp"
-                />
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/user_name"/>
-
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/ic_more_horiz_white_48dp"
-                />
-
-
-            </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    <include layout="@layout/toolbar"/>
 
     <android.support.v7.widget.CardView
-        android:layout_marginTop="-40dp"
         android:id="@+id/score_card"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
-        card_view:cardElevation="8dp"
+        android:layout_height="350dp"
+        card_view:cardElevation="10dp"
         card_view:cardCornerRadius="0dp"
         android:clickable="true"
         >
@@ -63,16 +29,15 @@
                 android:layout_width="match_parent"
                 map:mapType="normal"
                 map:cameraZoom="15"
-                map:liteMode="true"
                 />
 
-            <ImageView
+            <!--<ImageView
                 android:src="@drawable/sipmaporange"
                 android:layout_width="150dp"
                 android:layout_height="120dp"
                 android:layout_centerInParent="true"
                 android:clickable="true"
-                 />
+                 />-->
 
 
         </RelativeLayout>
@@ -97,7 +62,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F57C00"
+        android:background="@drawable/backpattern2repeat"
         >
 
     </LinearLayout>
