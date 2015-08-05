@@ -3,6 +3,7 @@ package com.herate.jijra.mapexample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -51,6 +53,7 @@ public class ButtonFragment extends Fragment implements
     private Location mLastLocation;
     private LocationManager mLocationManager;
     private Toolbar mToolbar;
+    private TextView mQuote;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -58,9 +61,11 @@ public class ButtonFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_button, parent, false);
         mMapView = (MapView)v.findViewById(R.id.mapCard);
         mMapView.onCreate(savedInstanceState);
-
-
-
+        mQuote = (TextView)v.findViewById(R.id.quote);
+        mQuote.setText("Drinkki kerrallaan pääset pidemmälle.");
+        Typeface font = Typeface.createFromAsset(
+                getActivity().getAssets(),
+                "Roboto-Thin.ttf");
 
         try{
             MapsInitializer.initialize(getActivity().getApplicationContext());
