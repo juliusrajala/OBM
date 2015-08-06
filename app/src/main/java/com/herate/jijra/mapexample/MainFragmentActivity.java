@@ -1,5 +1,6 @@
 package com.herate.jijra.mapexample;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.firebase.client.Firebase;
 import com.herate.jijra.mapexample.models.DrawerItem;
 import com.herate.jijra.mapexample.models.NavDrawerAdapter;
 
@@ -37,23 +39,30 @@ public class MainFragmentActivity extends SingleFragmentActivity {
     private ImageView mLogo;
     private NavDrawerAdapter mAdapter;
     private LinearLayoutManager mManager;
+    private Typeface font;
+    public Firebase myFirebaseRef;
 
     public String HEADER_NAME = "Julius Rajala";
-    public int HEADER_IMAGE = R.drawable.sipmappsmall;
+    public int HEADER_IMAGE = R.drawable.profilepix;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        //Database stuff
+        Firebase.setAndroidContext(this);
+        myFirebaseRef = new Firebase("https://sipmap.firebaseio.com/");
+
         setContentView(R.layout.fragment_activity);
 
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         dataList = new ArrayList<>();
         addItemsToDataList();
+        font = Typeface.createFromAsset(getAssets(), "Roboto-Thin.ttf");
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
         mRecyclerView = (RecyclerView)findViewById(R.id.RecyclerView);
-        mAdapter = new NavDrawerAdapter(dataList, this, HEADER_NAME, HEADER_IMAGE);
+        mAdapter = new NavDrawerAdapter(dataList, this, HEADER_NAME, HEADER_IMAGE, font);
         mManager = new LinearLayoutManager(this);
 
         mRecyclerView.setLayoutManager(mManager);
@@ -134,10 +143,11 @@ public class MainFragmentActivity extends SingleFragmentActivity {
     }
 
     private void addItemsToDataList(){
-        dataList.add(new DrawerItem(getString(R.string.home), R.drawable.ic_action_name));
-        dataList.add(new DrawerItem(getString(R.string.map), R.drawable.ic_action_name));
-        dataList.add(new DrawerItem(getString(R.string.settings), R.drawable.ic_action_name));
-        dataList.add(new DrawerItem(getString(R.string.about), R.drawable.ic_action_name));
+        dataList.add(new DrawerItem(getString(R.string.home), R.mipmap.drawer_home));
+        dataList.add(new DrawerItem(getString(R.string.map), R.mipmap.drawer_map));
+        dataList.add(new DrawerItem(getString(R.string.settings), R.mipmap.drawer_settings));
+        dataList.add(new DrawerItem(getString(R.string.data), R.mipmap.drawer_data));
+        dataList.add(new DrawerItem(getString(R.string.about), R.mipmap.drawer_about));
     }
 
     @Override

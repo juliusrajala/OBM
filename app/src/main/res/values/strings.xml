@@ -9,6 +9,7 @@
 
     <string name="home">Home</string>
     <string name="map">Map</string>
+    <string name="data">Data for nerds</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
 </resources>

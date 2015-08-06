@@ -1,6 +1,7 @@
 package com.herate.jijra.mapexample.models;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,8 @@ public class NavDrawerAdapter extends RecyclerView.Adapter<NavDrawerAdapter.View
 
     private Context mContext;
 
+    public Typeface font;
+
 
     /***
      *
@@ -48,6 +51,7 @@ public class NavDrawerAdapter extends RecyclerView.Adapter<NavDrawerAdapter.View
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
         if (viewType == TYPE_ITEM) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.nav_bar_row,parent,false); //Inflating the layout
 
@@ -78,12 +82,16 @@ public class NavDrawerAdapter extends RecyclerView.Adapter<NavDrawerAdapter.View
         if(holder.Holderid ==1) {                              // as the list view is going to be called after the header view so we decrement the
             // position by 1 and pass it to the holder while setting the text and image
             holder.textView.setText(mNavTitles[position - 1]); // Setting the Text with the array of our Titles
+            if(font != null)
+                holder.textView.setTypeface(font);
             holder.imageView.setImageResource(mIcons[position -1]);// Settimg the image with array of our icons
         }
         else{
 
             holder.profile.setImageResource(profile);           // Similarly we set the resources for header view
             holder.Name.setText(name);
+            if(font != null)
+                holder.Name.setTypeface(font);
         }
 
     }
@@ -138,6 +146,7 @@ public class NavDrawerAdapter extends RecyclerView.Adapter<NavDrawerAdapter.View
 
 
                 Name = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
+
                 profile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for profile pic
                 Holderid = 0;                                                // Setting holder id = 0 as the object being populated are of type header view
             }
@@ -146,10 +155,9 @@ public class NavDrawerAdapter extends RecyclerView.Adapter<NavDrawerAdapter.View
     }
 
 
-    public NavDrawerAdapter(List<DrawerItem> dataList, Context context, String Name, int Profile){ // MyAdapter Constructor with titles and icons parameter
-        // titles, icons, name, email, profile pic are passed from the main activity as we
+    public NavDrawerAdapter(List<DrawerItem> dataList, Context context, String Name, int Profile, Typeface font){
 
-
+        this.font = font;
         mNavTitles = new String[dataList.size()];
         mIcons = new int[dataList.size()];
 

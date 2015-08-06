@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by jijra on 17.7.2015.
@@ -54,6 +56,8 @@ public class ButtonFragment extends Fragment implements
     private LocationManager mLocationManager;
     private Toolbar mToolbar;
     private TextView mQuote;
+    private Map<String, LatLng> mDataSet;
+    private Typeface font;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -62,11 +66,12 @@ public class ButtonFragment extends Fragment implements
         mMapView = (MapView)v.findViewById(R.id.mapCard);
         mMapView.onCreate(savedInstanceState);
         mQuote = (TextView)v.findViewById(R.id.quote);
-        mQuote.setText("Drinkki kerrallaan pääset pidemmälle.");
-        Typeface font = Typeface.createFromAsset(
+        final Firebase myFirebaseRef = new Firebase("https://sipmap.firebaseio.com/");
+
+        font = Typeface.createFromAsset(
                 getActivity().getAssets(),
                 "Roboto-Thin.ttf");
-
+        mQuote.setTypeface(font);
         try{
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e){
@@ -90,16 +95,23 @@ public class ButtonFragment extends Fragment implements
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Hold button to register drink",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Hold button to register drink", Toast.LENGTH_SHORT).show();
             }
         });
+
+        final Firebase eventRef = myFirebaseRef.child("events");
 
 
         mButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Toast.makeText(getActivity(), "New marker added.", Toast.LENGTH_SHORT).show();
-                SipLab.get(getActivity()).addEvent(makeEvent());
+                SipEvent e = makeEvent();
+                Firebase newPostRef = eventRef.push();
+//                .child(mNick+"_"+e.getDate().getTime());
+                newPostRef.setValue(e);
+                Log.d(TAG, newPostRef.getKey());
+                SipLab.get(getActivity()).addEvent(e);
                 Log.d(TAG, String.valueOf(SipLab.get(getActivity()).getSips().size()));
                 populateMap();
                 return false;
@@ -109,14 +121,6 @@ public class ButtonFragment extends Fragment implements
         return v;
     }
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
-
-        mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
-    }
 
     public void fixMap(){
         mLastLocation = getLocation();
@@ -130,6 +134,11 @@ public class ButtonFragment extends Fragment implements
                     .build();
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
+    }
+
+    public SipEvent makeEvent(){
+        SipEvent sipEvent = new SipEvent(mNick, new Date(), getLocation().getLatitude(), getLocation().getLongitude());
+        return sipEvent;
     }
 
     public Location getLocation(){
@@ -194,7 +203,13 @@ public class ButtonFragment extends Fragment implements
                 .build();
     }
 
-
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        buildGoogleApiClient();
+        mNick = "Julius";
+        mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+    }
 
     @Override
     public void onConnected(Bundle connectionHint){
@@ -208,13 +223,13 @@ public class ButtonFragment extends Fragment implements
         }
         mMapView.invalidate();
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
-
 
     @Override
     public void onConnectionSuspended(int cause) {
@@ -263,11 +278,6 @@ public class ButtonFragment extends Fragment implements
         super.onLowMemory();
         if(mMapView != null)
             mMapView.onLowMemory();
-    }
-
-    public SipEvent makeEvent(){
-        SipEvent sipEvent = new SipEvent("Julius", new Date(), getLocation().getLatitude(), getLocation().getLongitude());
-        return sipEvent;
     }
 
     public static ButtonFragment newInstance(){

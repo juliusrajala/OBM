@@ -61,7 +61,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#212121"
+        android:background="#FBC02D"
         android:orientation="vertical"
         >
         
@@ -69,10 +69,14 @@
             android:id="@+id/quote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="90dp"
+            android:layout_marginRight="80dp"
+            android:layout_marginLeft="80dp"
             android:layout_gravity="center"
-            android:layout_margin="100dp"
-            android:text="what"
-            android:textColor="#ffffff"/>
+            android:gravity="center"
+            android:textSize="30sp"
+            android:text="Chill and Sip, we'll Map things for you."
+            android:textColor="#212121"/>
 
     </LinearLayout>
 
