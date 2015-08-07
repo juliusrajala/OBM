@@ -119,6 +119,7 @@ public class MainFragmentActivity extends SingleFragmentActivity {
             }
         });
 
+
         mDrawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         onTouchDrawer(currentFragment);

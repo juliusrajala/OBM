@@ -1,6 +1,6 @@
 package com.herate.jijra.mapexample;
 
-import com.google.android.gms.maps.model.LatLng;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +13,7 @@ import java.util.Date;
  * SipEvent class implementation. Self-explanatory, for the most part.
  */
 public class SipEvent implements Comparable<SipEvent> {
+    private static final String TAG = SipEvent.class.getSimpleName();
     private static final String JSON_NICKNAME = "nickname";
     private static final String JSON_DATE = "datetime";
     private static final String JSON_LATITUDE = "latitude";
@@ -20,24 +21,28 @@ public class SipEvent implements Comparable<SipEvent> {
 
     private String mNickName;
     private Date mDate;
+    private Date date;
+    private String nick;
+    private double latitude;
+    private double longitude;
     private double mLatitude;
     private double mLongitude;
 
 
     public SipEvent(){
-        mDate = new Date();
-        mNickName = "Nick Name";
-        mLatitude = 60.450692+(Math.random()/1000);
-        mLongitude = 22.278664+(Math.random()/1000);
+        Log.d(TAG, "Creating new SipEvent from empty");
+
     }
 
     public SipEvent(String nickName, Date date, double latitude, double longitude){
+        Log.d(TAG, "Creating new SipEvent from java data");
         mDate = date;
         mNickName = nickName;
-        mLatitude = latitude;
-        mLongitude = longitude;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
     public SipEvent(JSONObject json) throws JSONException{
+        Log.d(TAG, "Creating new SipEvent from JSON");
         mNickName = json.getString(JSON_NICKNAME);
         mDate = new Date(json.getLong(JSON_DATE));
         mLatitude = Double.parseDouble(json.getString(JSON_LATITUDE));
@@ -60,8 +65,11 @@ public class SipEvent implements Comparable<SipEvent> {
         return mNickName;
     }
 
-    public LatLng getLatLng(){
-        return new LatLng(mLatitude,mLongitude);
+    public double getLatitude(){
+        return latitude;
+    }
+    public double getLongitude(){
+        return longitude;
     }
 
     @Override

@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -30,11 +33,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by jijra on 17.7.2015.
@@ -49,15 +50,13 @@ public class ButtonFragment extends Fragment implements
     private MapView mMapView;
     private GoogleMap googleMap;
 
-    private ArrayList<SipEvent> mEvents;
     private String mNick;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationManager mLocationManager;
-    private Toolbar mToolbar;
     private TextView mQuote;
-    private Map<String, LatLng> mDataSet;
     private Typeface font;
+    private ClusterManager<EventItem> mManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -111,29 +110,88 @@ public class ButtonFragment extends Fragment implements
 //                .child(mNick+"_"+e.getDate().getTime());
                 newPostRef.setValue(e);
                 Log.d(TAG, newPostRef.getKey());
-                SipLab.get(getActivity()).addEvent(e);
-                Log.d(TAG, String.valueOf(SipLab.get(getActivity()).getSips().size()));
-                populateMap();
+//                SipLab.get(getActivity()).addEvent(e);
+//                populateMap();
                 return false;
             }
         });
+
+        eventRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, " There are: " + dataSnapshot.getChildrenCount() + " children");
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.e(TAG, "The read failed.");
+            }
+        });
+
+        eventRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG, "event added:"+dataSnapshot.getValue());
+
+                SipEvent sipEvent = dataSnapshot.getValue(SipEvent.class);
+                addEventOnMap(sipEvent);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
 
         return v;
     }
 
 
+
     public void fixMap(){
         mLastLocation = getLocation();
-        if(mLastLocation != null){
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 12.0f));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .tilt(60.0f)
-                    .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-                    .zoom(15)
-                    .build();
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mLastLocation != null){
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 12.0f));
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .tilt(60.0f)
+                            .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                            .zoom(15)
+                            .build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }
+            }
+        });
+    }
+
+    public void addEventOnMap(SipEvent event){
+        final MarkerOptions marker = new MarkerOptions()
+                .position(new LatLng(event.getLatitude(), event.getLongitude()))
+                .title(event.getNick())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+
+        googleMap.addMarker(marker);
+
+
     }
 
     public SipEvent makeEvent(){
@@ -149,42 +207,42 @@ public class ButtonFragment extends Fragment implements
     }
 
     public void populateMap(){
-        mEvents = SipLab.get(getActivity()).getSips();
-        Log.d(TAG, "Populating map with markers, there's: " + mEvents.size());
-
-        Collections.sort(mEvents);
-        if(mEvents.size() == 0)
-            return;
-        try{
-            for(int i=0; i<20; i++){
-                MarkerOptions marker = new MarkerOptions()
-                        .position(mEvents.get(i).getLatLng())
-                        .title(mEvents.get(i).getNick())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
-                googleMap.addMarker(marker);
-
-            }
-        }catch(IndexOutOfBoundsException e){
-            Log.e(TAG,"Index out of bounds", e);
-            for(SipEvent a : mEvents){
-                MarkerOptions marker = new MarkerOptions()
-                        .position(a.getLatLng())
-                        .title(a.getNick())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
-                googleMap.addMarker(marker);
-            }
-        }
-        try{
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception a){
-            Log.e(TAG, "Error thrown", a);
-        }
-
+//        mEvents = SipLab.get(getActivity()).getSips();
+//        Log.d(TAG, "Populating map with markers, there's: " + mEvents.size());
+//
+//        Collections.sort(mEvents);
+//        if(mEvents.size() == 0)
+//            return;
+//        try{
+//            for(int i=0; i<20; i++){
+//                MarkerOptions marker = new MarkerOptions()
+//                        .position(mEvents.get(i).getLatLng())
+//                        .title(mEvents.get(i).getNick())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+//                googleMap.addMarker(marker);
+//
+//            }
+//        }catch(IndexOutOfBoundsException e){
+//            Log.e(TAG,"Index out of bounds", e);
+//            for(SipEvent a : mEvents){
+//                MarkerOptions marker = new MarkerOptions()
+//                        .position(a.getLatLng())
+//                        .title(a.getNick())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+//                googleMap.addMarker(marker);
+//            }
+//        }
+//        try{
+//            MapsInitializer.initialize(getActivity().getApplicationContext());
+//        } catch (Exception a){
+//            Log.e(TAG, "Error thrown", a);
+//        }
+//
         if(mMapView == null){
             Log.d(TAG, "mapView is null");
             return;
         }
-
+//
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
