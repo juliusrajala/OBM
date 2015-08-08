@@ -3,6 +3,7 @@ package com.herate.jijra.mapexample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.Date;
 
@@ -56,7 +60,7 @@ public class ButtonFragment extends Fragment implements
     private LocationManager mLocationManager;
     private TextView mQuote;
     private Typeface font;
-    private ClusterManager<EventItem> mManager;
+    private ClusterManager<EventItem> mClusterManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -81,6 +85,7 @@ public class ButtonFragment extends Fragment implements
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        setUpClusterer();
         mLastLocation = getLocation();
         fixMap();
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -131,10 +136,13 @@ public class ButtonFragment extends Fragment implements
         eventRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "event added:"+dataSnapshot.getValue());
+                Log.d(TAG, "event added:" + dataSnapshot.getValue());
 
                 SipEvent sipEvent = dataSnapshot.getValue(SipEvent.class);
-                addEventOnMap(sipEvent);
+//                addEventOnMap(sipEvent);
+                EventItem c = new EventItem(sipEvent);
+                mClusterManager.addItem(c);
+                mMapView.invalidate();
             }
 
             @Override
@@ -160,6 +168,13 @@ public class ButtonFragment extends Fragment implements
 
 
         return v;
+    }
+
+    private void setUpClusterer(){
+        mClusterManager = new ClusterManager<EventItem>(getActivity(), googleMap);
+        mClusterManager.setRenderer(new SipClusterRenderer());
+        googleMap.setOnCameraChangeListener(mClusterManager);
+        googleMap.setOnMarkerClickListener(mClusterManager);
     }
 
 
@@ -341,4 +356,25 @@ public class ButtonFragment extends Fragment implements
     public static ButtonFragment newInstance(){
         return new ButtonFragment();
     }
+
+    private class SipClusterRenderer extends DefaultClusterRenderer<EventItem> {
+        private final IconGenerator mIconGenerator = new IconGenerator(getActivity().getApplicationContext());
+        private final ImageView mImageView;
+        private final int mDimension;
+
+        public SipClusterRenderer(){
+            super(getActivity().getApplicationContext(), googleMap, mClusterManager);
+            mImageView = new ImageView(getActivity().getApplicationContext());
+            mDimension = 100;
+            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            mIconGenerator.setContentView(mImageView);
+        }
+        @Override
+        public void onBeforeClusterItemRendered(EventItem item, MarkerOptions markerOptions){
+            mImageView.setImageResource(item.imageResource);
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(item.nick);
+        }
+    }
+
 }
