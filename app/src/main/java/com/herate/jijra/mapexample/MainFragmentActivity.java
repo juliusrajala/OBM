@@ -28,7 +28,8 @@ public class MainFragmentActivity extends SingleFragmentActivity {
     private static final String TAG = MainFragmentActivity.class.getSimpleName();
 
     private static final int BUTTON_FRAGMENT = 1;
-    private static final int SETTINGS_FRAGMENT = 2;
+    private static final int MAP_FRAGMENT = 2;
+    private static final int ABOUT_FRAGMENT = 5;
     private int currentFragment = 1;
 
     private Toolbar mToolbar;
@@ -119,6 +120,7 @@ public class MainFragmentActivity extends SingleFragmentActivity {
             }
         });
 
+
         mDrawer.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         onTouchDrawer(currentFragment);
@@ -133,10 +135,13 @@ public class MainFragmentActivity extends SingleFragmentActivity {
         currentFragment = position;
         switch (position){
             case BUTTON_FRAGMENT:
-                openFragment(new ButtonFragment());
+                openFragment(ButtonFragment.newInstance());
                 break;
-            case SETTINGS_FRAGMENT:
+            case MAP_FRAGMENT:
+                openFragment(MapFragment.newInstance());
                 break;
+            case ABOUT_FRAGMENT:
+                openFragment(AboutFragment.newInstance());
             default:
                 return;
         }
