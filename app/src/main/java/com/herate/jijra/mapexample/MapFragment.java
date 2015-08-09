@@ -7,6 +7,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,8 +49,10 @@ public class MapFragment extends Fragment implements
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private LocationManager mLocationManager;
+    private FloatingActionButton mButton;
 
-    public static MapFragment newInstance(String param1, String param2) {
+
+    public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -62,7 +65,17 @@ public class MapFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         buildGoogleApiClient();
         mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        mapView.onResume();
+    }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        mapView.onPause();
     }
 
     @Override

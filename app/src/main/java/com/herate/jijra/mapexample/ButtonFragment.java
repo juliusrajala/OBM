@@ -199,16 +199,7 @@ public class ButtonFragment extends Fragment implements
         });
     }
 
-    public void addEventOnMap(SipEvent event){
-        final MarkerOptions marker = new MarkerOptions()
-                .position(new LatLng(event.getLatitude(), event.getLongitude()))
-                .title(event.getNick())
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
 
-        googleMap.addMarker(marker);
-
-
-    }
 
     public SipEvent makeEvent(){
         SipEvent sipEvent = new SipEvent(mNick, new Date(), getLocation().getLatitude(), getLocation().getLongitude());
@@ -324,7 +315,6 @@ public class ButtonFragment extends Fragment implements
     public void onPause(){
         super.onPause();
         Log.d(TAG, "OnPause called");
-        SipLab.get(getActivity()).saveSipEvents();
         mMapView.onPause();
     }
 
