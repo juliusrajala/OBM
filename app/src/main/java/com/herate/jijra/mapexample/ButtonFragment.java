@@ -364,7 +364,7 @@ public class ButtonFragment extends Fragment implements
         public void onBeforeClusterItemRendered(EventItem item, MarkerOptions markerOptions){
             mImageView.setImageResource(item.imageResource);
             Bitmap icon = mIconGenerator.makeIcon();
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon)).title(item.nick);
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.sipmap_icon)).title(item.nick);
         }
     }
 

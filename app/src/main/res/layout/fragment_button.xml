@@ -49,7 +49,7 @@
     <android.support.design.widget.FloatingActionButton
         android:layout_width="140dp"
         android:layout_height="140dp"
-        android:src="@drawable/glugger_icon"
+        android:src="@mipmap/sipmap_icon"
         android:id="@+id/add_button"
         app:elevation="12dp"
         android:layout_gravity="center"
