@@ -1,4 +1,4 @@
-package com.herate.jijra.mapexample;
+package com.herate.jijra.mapexample.models;
 
 import android.util.Log;
 

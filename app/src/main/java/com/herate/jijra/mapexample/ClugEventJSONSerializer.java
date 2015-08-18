@@ -2,6 +2,8 @@ package com.herate.jijra.mapexample;
 
 import android.content.Context;
 
+import com.herate.jijra.mapexample.models.SipEvent;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;

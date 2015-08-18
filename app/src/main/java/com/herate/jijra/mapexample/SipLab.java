@@ -3,6 +3,8 @@ package com.herate.jijra.mapexample;
 import android.content.Context;
 import android.util.Log;
 
+import com.herate.jijra.mapexample.models.SipEvent;
+
 import java.util.ArrayList;
 
 /**
